@@ -2,6 +2,7 @@
 
 Este proyecto es una aplicacion web para gestionar tareas, construida con react. Herramientas utilizadas:
 
+- VS Code
 - node.js
 - react + vite
 - tailwind
