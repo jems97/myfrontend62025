@@ -28,6 +28,7 @@ export default function TaskManager() {
         }
       })
         .then(response => {
+          console.log(response.data.tareas);
           setTasks(response.data.tareas);
           setLoading(false);
         })
@@ -62,14 +63,17 @@ export default function TaskManager() {
         headers: {
           Authorization: `Bearer ${Token}`
         }
-      });
-      //ordena las tareas por fecha sin tenr que ehacer otra peticion
-      const orderedTasks = [...tasks, newTask].sort(
-        (a, b) => new Date(a.fecha_limite) - new Date(b.fecha_limite)
-      );
-
-      setTasks(orderedTasks);
-
+      }).then(response => {
+        console.log(response.data.tareas);
+        const lasttask = response.data.tareas;
+        const updatedTasks = ([...tasks, lasttask]);
+        //ordena las tareas por fecha sin tenr que ehacer otra peticion
+        updatedTasks.sort((a, b) => new Date(a.fecha_limite) - new Date(b.fecha_limite));
+        setTasks(updatedTasks);
+      }).catch(error => {
+          console.error('Error al guardar tareas:', error);
+        });
+      
       // Limpiar formulario
       setTitle('');
       setDescription('');
@@ -77,7 +81,6 @@ export default function TaskManager() {
 
     } catch (error) {
       console.error("error");
-      setError('Credenciales incorrectas');
     }
 
   };
@@ -91,13 +94,13 @@ export default function TaskManager() {
       })
         .then(response => {
           console.log(response.data);
+          //elimar de la lista para que se actuali las tareas
+          setTasks(tasks.filter((task) => task.id !== id));
         })
         .catch(error => {
           console.error('Error al cargar tareas:', error);
           setLoading(false);
         });
-      //elimar de la lista para que se actuali las tareas
-      setTasks(tasks.filter((task) => task.id !== id));
 
     } catch (error) {
       console.log(error);

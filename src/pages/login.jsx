@@ -34,15 +34,27 @@ export default function Login() {
       const response = await api.post('/login', {
         email,
         password
+      }).then(response => {
+        const status = response.data.status;
+        const msg = response.data.msg;
+
+        if (status === "error") {
+          setError(msg);
+        } else if (status === "success") {
+          const usuario = response.data;
+          console.log(usuario);
+          localStorage.setItem('user_id', usuario.user.id);
+          localStorage.setItem('user_name', usuario.user.user_name);
+          localStorage.setItem('access_token', usuario.access_token);
+          localStorage.setItem('Auth', true);
+          //Despues de recoger los datos necesario enviar al usuaio al pag task
+          navigate('/tasks');
+        }
+      }).catch(error => {
+        console.error('Error al reegistrar:', error);
       });
-      const usuario = response.data;
-      console.log(usuario);
-      localStorage.setItem('user_id', usuario.user.id);
-      localStorage.setItem('user_name', usuario.user.user_name);
-      localStorage.setItem('access_token', usuario.access_token);
-      localStorage.setItem('Auth', true);
-      //Despues de recoger los datos necesario enviar al usuaio al pag task
-      navigate('/tasks');
+
+
     } catch (error) {
       console.error("error");
       setError('Credenciales incorrectas');
